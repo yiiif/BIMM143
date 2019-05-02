@@ -1,0 +1,104 @@
+---
+title: 'Class 6: R functions'
+author: "Yi Fu"
+date: "4/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## About
+This is my **class 6** R markdown document with my *codes* and notes for the day.
+
+```{r}
+plot(1:10,typ="l",col="blue")
+```
+## Read files Exercises
+```{r}
+read.table("test1.txt", header=T, sep=",")
+read.table("test2.txt", header=T, sep="$")
+read.table("https://bioboot.github.io/bimm143_S19/class-material/test3.txt")
+```
+
+## Function
+```{r}
+add <- function ( x, y = 1 ) {
+  # Sum the inputs x and y
+  x + y
+}
+```
+
+```{r}
+add (10)
+add (10, 10)
+add (c(1, 2, 3), 4)
+```
+
+```{r}
+#add (1, 2, 2)
+```
+
+```{r}
+#add (x = 1, y = "b")
+```
+```{r}
+rescale <- function (x) {
+  rng = range (x)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+```{r}
+rescale (1:10)
+```
+
+```{r}
+rescale2 <- function (x, na.rm = T) {
+  rng = range (x, na.rm = na.rm)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+```{r}
+rescale2 (c (1, 2, NA, 3, 10))
+rescale2 (c (1, 2, NA, 3, 10), na.rm = F)
+```
+```{r}
+rescale3 <- function (x, na.rm = T, plot = F) {
+  
+  if (! is.numeric(x)) {
+    stop ("You need to give only numbers please")
+  }
+  
+  rng = range (x, na.rm = na.rm)
+  print ("Hello")
+  
+  answer = (x - rng[1]) / (rng[2] - rng[1])
+  
+  print ("is it me you are looking for?")
+  
+  if (plot) {
+    plot (answer, typ = "b", lwd = 4)
+    print ("Please don't sing again ...")
+  }
+  else {
+    print ("I can see it in ...")
+  }
+  return (answer)
+}
+```
+
+```{r}
+# 11  rescale3 (c (1, 10, "string"))
+```
+
+```{r}
+rescale3 (c (1, 2, NA, 3, 10))
+```
+
+```{r}
+rescale3 (c (1, 2, NA, 3, 10), plot = T)
+```
+
