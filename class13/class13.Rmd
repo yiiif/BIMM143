@@ -1,0 +1,10 @@
+---
+title: "Class 13: Genome informatics and high throughput sequencing"
+author: "Yi Fu"
+date: "5/14/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

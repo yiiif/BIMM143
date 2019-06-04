@@ -1,0 +1,123 @@
+---
+title: "Class 17: "
+author: "Yi Fu"
+date: "5/28/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import data
+
+> **File \> Import \> Network from File...** and choose **galFiltered.sif**
+
+> **File \> Import \> Table from File...** and choose **galExpData.csv**
+
+```{r warning=FALSE, include=FALSE, results='hide'}
+if (!require("RCy3")) {
+  BiocManager::install("RCy3")
+}
+if (!require("igraph")) {
+  install.packages("igraph")
+}
+if (!require("RColorBrewer")) {
+  install.packages("RColorBrewer")
+}
+if (!require("ggraph")) {
+  install.packages("ggraph")
+}
+```
+
+
+```{r}
+library(RCy3)
+library(igraph)
+library(RColorBrewer)
+library(ggraph)
+```
+
+
+Let's check if we can talk to cytoscape
+```{r}
+cytoscapePing()
+```
+
+```{r}
+g = makeSimpleIgraph()
+createNetworkFromIgraph(g, "myGraph")
+```
+
+We can simply plot the graph
+```{r}
+plot(g)
+```
+
+Or We can include this Cytoscape rendered network image in our report.
+```{r}
+fig <- exportImage(filename="demo", type="png", height=350)
+knitr::include_graphics("./demo.png")
+```
+
+Cytoscape provides a number of canned visual styles.
+```{r}
+getVisualStyleNames()
+setVisualStyle("Marquee")
+```
+
+We can again include this Cytoscape rendered network image in our report.
+```{r}
+fig <- exportImage(filename="demo_marquee", type="png", height=350)
+knitr::include_graphics("./demo_marquee.png")
+```
+
+
+```{r}
+prok_vir_cor <- read.delim("./data/virus_prok_cor_abundant.tsv", stringsAsFactors = FALSE)
+head(prok_vir_cor)
+```
+```{r}
+g <- graph.data.frame(prok_vir_cor, directed = FALSE)
+plot(g)
+```
+
+Lets turn off text labels
+```{r}
+plot(g, vertex.label=NA)
+```
+
+
+Make the vertex much smaller
+```{r}
+plot(g, vertex.size=3, vertex.label=NA)
+```
+
+```{r}
+ggraph(g, layout = 'auto') +
+  geom_edge_link(alpha = 0.25) +
+  geom_node_point(color="steelblue") +
+  theme_graph()
+```
+
+Send this network to Cytoscape.
+```{r}
+createNetworkFromIgraph(g,"myIgraph")
+```
+
+Community structure detection algorithms try to find dense subgraphs within larger network graphs (i.e. clusters of well connected nodes that are densely connected themselves but sparsely connected to other nodes outside the cluster).
+```{r}
+cb = cluster_edge_betweenness(g)
+plot(cb, y=g, vertex.label=NA,  vertex.size=3)
+d <- degree(g)
+hist(d, breaks=30, col="lightblue", main ="Node Degree Distribution")
+plot( degree_distribution(g), type="h" )
+```
+
+## Centrality analysis
+
+```{r}
+bac_id_affi <- read.delim("./data/prok_tax_from_silva.tsv", stringsAsFactors = FALSE)
+head(bac_id_affi)
+```
+

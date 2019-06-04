@@ -1,0 +1,39 @@
+---
+title: "Class 16: Essential UNIX for bioinformatics "
+author: "Yi Fu"
+date: "5/23/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data=read.csv("mm-second.x.zebrafish.tsv",sep="\t")
+colnames(data)=c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore")
+head(data)
+```
+
+```{r}
+hist(data$bitscore,breaks=30)
+```
+
+```{r}
+plot(data$pident  * (data$qend - data$qstart), data$bitscore)
+```
+
+```{r}
+if (!require("ggplot2")) {
+  install.packages("ggplot2")
+}
+library(ggplot2)
+ggplot(data, aes(pident, bitscore)) + geom_point(alpha=0.1) 
+```
+
+
+```{r}
+ggplot(data, aes((data$pident * (data$qend - data$qstart)), bitscore)) + geom_point(alpha=0.1) + geom_smooth()
+```
+
+

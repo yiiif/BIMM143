@@ -1,0 +1,234 @@
+---
+title: "Class 14: Transcriptomics and the analysis of RNA-Seq data"
+author: "Yi Fu"
+date: "5/16/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#install.packages("BiocManager")
+#BiocManager::install()
+
+# For this class, you'll also need DESeq2:
+#BiocManager::install("DESeq2")
+
+library(BiocManager)
+library(DESeq2)
+```
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE,row.names = 1)
+metadata <-  read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+control.inds <- metadata$dex == "control"
+control <- metadata[control.inds,]
+control
+```
+
+```{r}
+head(counts[,control$id])
+```
+
+Determine the mean count values for all genes accross control experiments
+```{r}
+control.mean <- rowSums(counts[,control$id])/length(counts[,control$id])
+head(control.mean)
+```
+
+Do the same for the drug treated experiments
+
+```{r}
+treated.inds <- metadata$dex == "treated"
+treated <- metadata[treated.inds,]
+treated
+```
+
+```{r}
+head(counts[,treated$id])
+```
+
+```{r}
+treated.mean <- rowSums(counts[,treated$id])/length(counts[,treated$id])
+head(treated.mean)
+```
+
+Let's store the control.mean and treated.mean together for ease of use
+
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+colSums(meancounts)
+```
+
+```{r}
+plot(meancounts[,1:2],xlab="Control",ylab="Treated")
+plot(meancounts[,1:2],log="xy",xlab="log Control",ylab="log Treated")
+```
+
+Here we calculate log2foldchange.
+```{r}
+meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+```
+
+We will now remove the NaN and -Inf values.
+The NaN is returned when you divide by zero and try to take the log. The -Inf is returned when you try to take the log of zero.
+```{r}
+zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
+to.rm <- unique(zero.vals[,1])
+mycounts <- meancounts[-to.rm,]
+head(mycounts)
+```
+
+How many genes are up in the drug treated cells and how many are down?
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+sum(up.ind)
+sum(down.ind)
+```
+
+We can add annotation from a supplied CSV file, such as those available from ENSEMBLE or UCSC. The annotables_grch38.csv annotation table links the unambiguous Ensembl gene ID to other useful annotation like the gene symbol, full gene name, location, Entrez gene ID, etc.
+```{r}
+anno <- read.csv("annotables_grch38.csv")
+head(anno)
+```
+
+Use the **merge** funtion to add the annotation data from the "anno" object to our RNA-Seq results in "mycounts"
+```{r}
+# use the merge function
+mycounts.anno <- merge(mycounts,anno,by.x = "row.names", by.y = "ensgene")
+head(mycounts.anno)
+```
+
+
+```{r}
+#BiocManager::install("AnnotationDbi")
+library("AnnotationDbi")
+#BiocManager::install("org.Hs.eg.db")
+library("org.Hs.eg.db")
+columns(org.Hs.eg.db)
+```
+
+```{r}
+mycounts$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(mycounts),
+                     column="SYMBOL",
+                     keytype="ENSEMBL",
+                     multiVals="first")
+mycounts$entrez <- mapIds(org.Hs.eg.db,
+                     keys=row.names(mycounts),
+                     column="ENTREZID",
+                     keytype="ENSEMBL",
+                     multiVals="first")
+mycounts$uniprot <- mapIds(org.Hs.eg.db,
+                     keys=row.names(mycounts),
+                     column="UNIPROT",
+                     keytype="ENSEMBL",
+                     multiVals="first")
+```
+
+```{r}
+head(mycounts[up.ind,])
+head(mycounts[down.ind,])
+```
+
+```{r}
+#BiocManager::install("DESeq2")
+library(DESeq2)
+citation("DESeq2")
+```
+
+Setup the object needed for DESeq analysis
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds <- DESeq(dds)
+```
+
+```{r}
+res <- results(dds)
+summary(res)
+resOrdered <- res[order(res$pvalue),]
+```
+
+Change the p-value threshold to 0.05
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+```{r}
+resSig05 <- subset(as.data.frame(res), padj < 0.05)
+nrow(resSig05)
+```
+
+Change the p-value threshold again to 0.01
+```{r}
+res05 <- results(dds, alpha=0.01)
+summary(res05)
+```
+
+Store our results as a data.frame object
+```{r}
+resSig01 <- subset(as.data.frame(res), padj < 0.01)
+nrow(resSig01)
+```
+
+Let's sort or order our results by the adjusted p-value
+```{r}
+ord <- order( resSig01$padj )
+head(resSig01[ord,])
+#write.csv(resSig01[ord,], "signif01_results.csv")
+```
+
+Data visualization
+```{r}
+i <- grep("CRISPLD2", resSig01$symbol)
+resSig01[i,]
+rownames(resSig01[i,])
+```
+
+```{r}
+d <- plotCounts(dds, gene="ENSG00000103196", intgroup="dex", returnData=TRUE)
+head(d)
+boxplot(count ~ dex , data=d)
+```
+
+```{r}
+library(ggplot2)
+ggplot(d, aes(dex, count)) + geom_boxplot(aes(fill=dex)) + scale_y_log10() + ggtitle("CRISPLD2")
+```
+
+Volcano plot
+```{r}
+# Setup our custom point color vector 
+mycols <- rep("gray", nrow(res))
+mycols[ res$padj < 0.01 ]  <- "red" 
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "blue"
+mycols[ (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 ) ] <- "green"
+
+palette( c("gray","blue") )
+plot( res$log2FoldChange,  -log(res$padj), col=mycols, ylab="-Log(P-value)", xlab="Log2(FoldChange)")
+
+# Add some cut-off lines
+abline(v=c(-2,2), col="darkgray", lty=2)
+abline(h=-log(0.1), col="darkgray", lty=2)
+```
+
+```{r}
+# Use ggplot
+library(ggplot2)
+ggplot(as.data.frame(res), aes(log2FoldChange, -log10(pvalue), col=mycols)) + 
+    geom_point() + 
+    ggtitle("Volcano plot")
+```
+
