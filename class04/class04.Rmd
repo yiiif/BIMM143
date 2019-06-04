@@ -1,0 +1,116 @@
+---
+title: "Class 4: Bioinformatics data analysis with R"
+author: "Yi Fu"
+date: "4/11/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Simple Calculations
+Example of Addition:
+```{r}
+5 + 3
+```
+
+Example of Subtraction:
+```{r}
+5 - 3
+```
+
+Example of Multiplication:
+```{r}
+5 * 3
+```
+
+Example of Division:
+```{r}
+5 / 3
+```
+
+
+## 2. Object Assignment
+
+Examples of object Assignment:
+```{r}
+x = 3 * 4
+x <- 3 * 4
+```
+
+## 3. Function Calling
+Examples of calling *seq()* function:
+```{r}
+seq(1, 10)
+seq(1, 10, by=2)
+```
+
+Example of calling *date()* function:
+```{r}
+date()
+```
+
+## 4. Getting help
+When we don't remember what a function does and what are the parameters to take in, we can use *help()* or *?* to check.
+```{r}
+help(seq)
+?seq
+```
+
+We can also take a look at demos of the function.
+```{r}
+example(seq)
+```
+
+## 5. R Vectors
+Let's play with vectors in R, with the following two vectors *x* and *y*.
+```{r}
+x = c(56, 95.3, 0.4)
+length(x)
+y = c(3.2, 1.1, 0.2)
+length(y)
+```
+
+Here are the vector arithmetics:
+```{r}
+x + y
+x - y
+x * y
+x / y
+sqrt(x)
+round(sqrt(x), 3)
+log(x) / 2 + 1
+```
+
+Get vector values:
+```{r}
+x[1]
+x[4]
+```
+
+Set vector values:
+```{r}
+x[3] = 0.5
+x[4] = 1
+```
+
+Now, x is a vector of length 4.
+```{r}
+x
+```
+
+
+## RStudio Shortcuts
+Use **Alt+Shift+K** to see shortcut quick reference. More shortcuts can be found [here](https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts).
+
+
+### Some Useful Shortcuts
+```{bash eval=FALSE}
+Command+Shift+K    # knit document
+Command+Option+I   # Insert chunk (Sweave and Knitr)
+Command+Enter      # Run current line/selection
+Command+Option+R   # Run the current document
+Command+Option+B   # Run from document beginning to current line
+Command+Shift+C    # comment and uncomment
+```

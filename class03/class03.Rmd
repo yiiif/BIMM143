@@ -1,0 +1,12 @@
+---
+title: "Class 3: Advanced sequence alignment and database searching"
+author: "Yi Fu"
+date: "4/9/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## More on BLAST
