@@ -12,9 +12,9 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 
 **Class 06**: [R functions](https://github.com/yiiif/BIMM143/blob/master/class06/class06.md)
 
-**Class 07**:
+**Class 07**: [More on R functions](https://github.com/yiiif/BIMM143/blob/master/class07/class07.md)
 
-**Class 08**:
+**Class 08**: [Introduction to machine learning](https://github.com/yiiif/BIMM143/blob/master/class08/class08.md)
 
 **Class 09**:
 
