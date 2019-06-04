@@ -1,26 +1,25 @@
----
-title: "Homework for Class 6"
-author: "Yi Fu"
-date: "Due on 4/25/2019"
-output: github_document
----
+Homework for Class 6
+================
+Yi Fu
+Due on 4/25/2019
+
 ## Q6. How would you generalize the original code above to work with any set of input protein structures?
 
-First, let's check if "bio3d" package is installed. And then, load the package.
-```{r warning=FALSE, include=FALSE, results='hide'}
-if (!require("bio3d")) {
-  install.packages("bio3d")
-}
-```
+First, let’s check if “bio3d” package is installed. And then, load the
+package.
 
-
-```{r}
+``` r
 library(bio3d)
 ```
 
 ### Question: Can you improve this analysis code?
-Run through the code to see if it works, fix any copy/paste errors before simplifying to a core working code snippet, reducing any calculation duplication. And then, find a way to improve the code by writing a new function.
-```{r eval=F}
+
+Run through the code to see if it works, fix any copy/paste errors
+before simplifying to a core working code snippet, reducing any
+calculation duplication. And then, find a way to improve the code by
+writing a new function.
+
+``` r
 s1 = read.pdb("4AKE") # kinase with drug
 s2 = read.pdb("1AKE") # kinase no drug
 s3 = read.pdb("1E4Y") # kinase with drug
@@ -39,7 +38,8 @@ plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
 ```
 
 ### Answer: code for the analysis of protein drug interactions by abstracting the main activities in one more useful function call.
-```{r}
+
+``` r
 # The function takes a vector of pdbid's and output the plot of factor of corresponding chain and atoms. 
 # The pdbid is required parameter. 
 # Usage: 
@@ -68,7 +68,23 @@ plotPDB <- function (pdbid, chain="A", elety="CA") {
 }
 ```
 
-Let's call the function to check the function we just created is working. This function calling plots for three protein including "4AKE", "1AKE", "1E4Y".
-```{r}
+Let’s call the function to check the function we just created is
+working. This function calling plots for three protein including “4AKE”,
+“1AKE”, “1E4Y”.
+
+``` r
 plotPDB(c("4AKE", "1AKE", "1E4Y"))
 ```
+
+    ##   Note: Accessing on-line PDB file
+
+![](homework06_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+    ##   Note: Accessing on-line PDB file
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+![](homework06_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+
+    ##   Note: Accessing on-line PDB file
+
+![](homework06_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
