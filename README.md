@@ -16,18 +16,18 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 
 **Class 08**: [Introduction to machine learning](https://github.com/yiiif/BIMM143/blob/master/class08/class08.md)
 
-**Class 09**:
+**Class 09**: [Unsupervised learning mini-project](https://github.com/yiiif/BIMM143/blob/master/class09/class09.md)
 
-**Class 11**:
+**Class 11**: [Structural Bioinformatics](https://github.com/yiiif/BIMM143/blob/master/class11/class11.md)
 
-**Class 12**:
+**Class 12**: [Bioinformatics in drug discovery and design](https://github.com/yiiif/BIMM143/blob/master/class12/class12.md)
 
-**Class 14**:
+**Class 14**: [Transcriptomics and the analysis of RNA-Seq data](https://github.com/yiiif/BIMM143/blob/master/class14/class14.md)
 
-**Class 15**:
+**Class 15**: [Genome annotation and the interpretation of gene lists](https://github.com/yiiif/BIMM143/blob/master/class15/class15.md)
 
-**Class 16**:
+**Class 16**: [Essential UNIX for bioinformatics](https://github.com/yiiif/BIMM143/blob/master/class16/class16.md)
 
-**Class 17**:
+**Class 17**: [Biological network analysis](https://github.com/yiiif/BIMM143/blob/master/class17/class17.md)
 
-**Class 18**:
+**Class 18**: [Cancer genomics](https://github.com/yiiif/BIMM143/blob/master/class18/class18.md)
