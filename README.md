@@ -31,3 +31,5 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 **Class 17**: [Biological network analysis](https://github.com/yiiif/BIMM143/blob/master/class17/class17.md)
 
 **Class 18**: [Cancer genomics](https://github.com/yiiif/BIMM143/blob/master/class18/class18.md)
+
+to show a html file prefix: http://htmlpreview.github.io/?
