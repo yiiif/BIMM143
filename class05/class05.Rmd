@@ -1,8 +1,9 @@
 ---
-title: "Class 5: Data exploration and visualization in R"
+title: "Class 5"
+subtitle: "Data exploration and visualization in R"
 author: "Yi Fu"
 date: "4/16/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
