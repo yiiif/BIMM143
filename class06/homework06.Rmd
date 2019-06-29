@@ -2,7 +2,7 @@
 title: "Homework for Class 6"
 author: "Yi Fu"
 date: "Due on 4/25/2019"
-output: github_document
+output: html_document
 ---
 ## Q6. How would you generalize the original code above to work with any set of input protein structures?
 

@@ -1,8 +1,9 @@
 ---
-title: "Class 6: Writing and calling first R functions"
+title: "Class 6"
+subtitle: "Writing and calling first R functions"
 author: "Yi Fu"
 date: "4/18/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
