@@ -68,7 +68,7 @@ Example of calling *date()* function:
 date()
 ```
 
-    ## [1] "Tue May 28 13:26:57 2019"
+    ## [1] "Fri Jun 28 23:25:11 2019"
 
 ## 4\. Getting help
 

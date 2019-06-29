@@ -1,8 +1,9 @@
 ---
-title: "Class 4: Bioinformatics data analysis with R"
+title: "Class 4"
+subtitle: "Bioinformatics data analysis with R"
 author: "Yi Fu"
 date: "4/11/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
