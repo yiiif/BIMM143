@@ -1,8 +1,9 @@
 ---
-title: "Class 7: More on R functions"
+title: "Class 7"
+subtitle: "More on R functions"
 author: "Yi Fu"
 date: "4/23/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
