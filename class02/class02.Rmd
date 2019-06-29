@@ -1,8 +1,9 @@
 ---
-title: "Class 2: Sequence Alignments"
+title: "Class 2"
+subtitle: "Sequence Alignments"
 author: "Yi Fu"
 date: "4/4/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
