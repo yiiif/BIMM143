@@ -1,8 +1,9 @@
 ---
-title: "Class 9: Unsupervised learning mini-project"
+title: "Class 9"
+subtitle: "Unsupervised learning mini-project"
 author: "Yi Fu"
 date: "4/30/2019"
-output: github_document
+output: html_document
 always_allow_html: yes
 ---
 
