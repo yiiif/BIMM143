@@ -6,7 +6,7 @@ Yi Fu
 First, let’s check if “Seaview” has been downloaded. Here is the
 website:
 
-> [Seaview download](http://doua.prabi.fr/software/seaview).
+> [Seaview download](http://doua.prabi.fr/software/seaview)
 
 We are also going to use these websites:
 
