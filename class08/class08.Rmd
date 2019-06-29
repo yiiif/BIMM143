@@ -1,8 +1,9 @@
 ---
-title: "Class 8: Introduction to machine learning"
+title: "Class 8"
+subtitle: "Introduction to machine learning"
 author: "Yi Fu"
 date: "4/25/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
