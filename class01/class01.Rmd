@@ -1,8 +1,9 @@
 ---
-title: "Class 1: Databases and Online Resources"
+title: "Class 1"
+subtitle: "Databases and Online Resources"
 author: "Yi Fu"
 date: "4/2/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
