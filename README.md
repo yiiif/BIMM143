@@ -2,7 +2,7 @@
 
 This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm143_S19/) at UC San Diego.
 
-**Class 01**: [Databases and Online Resources](https://github.com/yiiif/BIMM143/blob/master/class01/class01.md)
+**Class 01**: [Databases and Online Resources](https://github.com/yiiif/BIMM143/blob/master/class01/class01.html)
 
 **Class 02**: [Sequence Alignments](https://github.com/yiiif/BIMM143/blob/master/class02/class02.md)
 
