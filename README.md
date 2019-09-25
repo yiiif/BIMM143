@@ -11,7 +11,7 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 **Class 03**: 
 
 **Class 04**: 
-[Class 4: Bioinformatics data analysis with R](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class04/class04.html)
+[Bioinformatics data analysis with R](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class04/class04.html)
 
 **Class 05**: 
 [Data exploration and visualization in R](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class05/class05.html)
