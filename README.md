@@ -18,6 +18,7 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 
 **Class 06**: 
 [R functions](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class06/class06.html)
+
 [Homework](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class06/homework06.html)
 
 **Class 07**: 
