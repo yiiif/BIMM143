@@ -1,6 +1,6 @@
 # BIMM 143
 
-This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm143_S19/) at UC San Diego.
+This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm143_S19/) at UC San Diego. The class is taught by Professor Barry J. Grant, and below are the class notes.
 
 **Class 01**: 
 [Databases and Online Resources](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class01/class01.html)
