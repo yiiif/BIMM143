@@ -1,8 +1,10 @@
 ---
-title: "Class 11: Structural Bioinformatics"
+title: "Class 11"
+subtitle: "Structural Bioinformatics"
 author: "Yi Fu"
 date: "5/7/2019"
 output: html_document
+#always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -24,6 +26,7 @@ library(bio3d)
 library(datapasta)
 ```
 
+VMD can be downloaded [here](https://www.ks.uiuc.edu/Development/Download/download.cgi).
 
 ## 1. The PDB database
 
@@ -60,103 +63,57 @@ sum(db$Proteins)/sum(db$Total)*100
 
 Type HIV in the PDB website search box, there are 1157 HIV-1 protease structures as of 2019-05-07.
 
-Then search for 1HSG, download the PDBfile, and read it into R.
-  <img src="data/1HSG.png" width="1000"/>
+## 2. VMD molecular viewer
+
+Open VMD, and go to "File > New Molecule". From the new window, click "Browse" and select "1hsg.pdb" file and click "Load".
+
+Play with the parameters. To save it to an image file on disk with VMD Main window, go to "File > Render > Start Rendering". The image looks like below.
+
+  <img src="data/vmd.png" width="1000"/>
+
+## 3. Bio3D in R
 ```{r}
-pdb = read.pdb("data/1hsg.pdb")
+pdb = read.pdb("1hsg")
 pdb
 ```
 
-There are 1198 protein residues: 1198, and 128 nonprotein residues - HOH (127), MK1 (1).
+There are 1198 protein residues: 198, and 128 nonprotein residues - HOH (127), MK1 (1).
 
+To find the attributes of any such object you can use:
 ```{r}
 attributes(pdb)
-head(pdb$atom)
-pdb$atom[1:2, c("eleno", "elety", "x","y","z")]
-pdb$atom$elety[1:2]
-plot.bio3d(pdb$atom$b[pdb$calpha], sse=pdb, typ="l", ylab="B-factor")
 ```
 
-> Q7. What type of R object is pdb$atom? HINT: You can always use the str() function to get a useful summery of any R object.
+Let's look at the atom attribute.
+```{r}
+rmarkdown::paged_table(pdb$atom)
+```
 
+Use the str() function to check the type of pdb$atom object and get a useful summery of any R object.
 ```{r}
 str(pdb$atom)
 ```
 
+The xyz coordinate attribute is a numeric matrix with 3N columns (each atom has
+three values x, y and z). The number of rows here correspond to the number of models in the
+PDB file (typically one for X-ray structures and multiple for NMR structures).
 ```{r}
 pdb$xyz
-dim(pdb$xyz)
-pdb$xyz[ 1, atom2xyz(1:2) ]
+# Print coordinates for the first xatom
+pdb$xyz[ 1, atom2xyz(1)]
 ```
 
-Atom selection is done via the function **atom.select**
-
+Atom selection is done via the function **atom.select**. Some common selection strings are "calpha", "cbeta", "backbone", "protein", "notprotein", "ligand", "water", "notwater", "h", and "noh")
 ```{r}
-inds = atom.select(pdb,"protein")
-pdb$atom[inds$atom,]
 inds = atom.select(pdb,"ligand")
 rmarkdown::paged_table(pdb$atom[inds$atom,])
 ```
 
+Let's write new PDB files with useful atom selected.
 ```{r}
 prot.pdb = atom.select (pdb,"protein",value = T)
-write.pdb (prot.pdb, file="1hsg_protein.pdb")
+write.pdb (prot.pdb, file="data/1hsg_protein.pdb")
 
 lig.pdb = atom.select (pdb,"ligand",value = T)
-write.pdb (lig.pdb, file="1hsg_ligand.pdb")
+write.pdb (lig.pdb, file="data/1hsg_ligand.pdb")
 ```
-
-## Search and retrieve Adenylate kinase structures
-
-```{r}
-aa <- get.seq("1ake_A")
-b <- blast.pdb(aa)
-hits <- plot(b)
-head(hits$pdb.id)
-```
-
-```{r}
-# Fetch PDBs
-files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
-
-# Align structures
-pdbs <- pdbaln(files)
-
-# Vector containing PDB codes
-ids <- basename.pdb(pdbs$id)
-
-# Draw schematic alignment
-plot(pdbs, labels=ids)
-```
-
-```{r}
-# Calculate sequence conservation
-cons <- conserv(pdbs, method="entropy22")
-
-# SSE annotations
-sse <- pdbs2sse(pdbs, ind=1, rm.gaps=FALSE)
-
-# Plot conservation per residue
-plotb3(cons, sse=sse, ylab="Sequence entropy")
-```
-
-```{r}
-anno <- pdb.annotate(ids)
-print(unique(anno$source))
-```
-
-```{r}
-# find invariant core
-core <- core.find(pdbs)
-# superimpose all structures to core
-pdbs$xyz = pdbfit(pdbs, core)
-# Perform PCA
-pc.xray <- pca(pdbs)
-# Calculate RMSD
-rd <- rmsd(pdbs)
-# Structure-based clustering
-hc.rd <- hclust(dist(rd))
-grps.rd <- cutree(hc.rd, k=3)
-plot(pc.xray, 1:2, col="grey50", bg=grps.rd, pch=21, cex=1)
-```
-
