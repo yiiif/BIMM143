@@ -20,18 +20,10 @@ if (!require("bio3d")) {
 library(bio3d)
 ```
 
-```{r}
-file.name <- get.pdb("1hsg.pdb")
-hiv <- read.pdb(file.name)
-```
+## 
 
-```{r}
-prot <- atom.select(hiv, "protein",value=T)
-lig <- atom.select(hiv, "ligand",value=T)
-write.pdb(prot, file="1hsg_protein.pdb")
-write.pdb(lig, file="1hsg_ligand.pdb")
-```
-
+For this section, we will use the program called Autodock Vina [4]. Autodock Vina is a fast
+docking program that requires minimal user intervention and is often employed for highthroughput virtual screening. We will run it from the command line.
 ```{bash}
 #~/Downloads/autodock_vina_1_1_2_mac/bin/vina --config config.txt --log log.txt
 ```

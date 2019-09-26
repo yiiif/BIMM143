@@ -3,8 +3,24 @@ Class 16: Essential UNIX for bioinformatics
 Yi Fu
 5/23/2019
 
+First, let’s check if “ggplot2” package is installed. And then, load the
+package.
+
 ``` r
-data=read.csv("mm-second.x.zebrafish.tsv",sep="\t")
+library(ggplot2)
+```
+
+## 1\. Unix command
+
+Here is a cheat sheet for the most commonly used commands.
+<img src="data/unix.png" width="1000"/>
+
+## 2\. ggplot2
+
+Let’s load the Blast sequences after command-line pipeline.
+
+``` r
+data=read.csv("data/mm-second.x.zebrafish.tsv",sep="\t")
 colnames(data)=c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore")
 head(data)
 ```
@@ -28,39 +44,27 @@ head(data)
 hist(data$bitscore,breaks=30)
 ```
 
-![](class16_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](class16_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+We want to know if there is a straightforward relationship between
+percent identity ($pident) and bitscore ($bitscore) for the alignments
+we generated.
 
 ``` r
-plot(data$pident  * (data$qend - data$qstart), data$bitscore)
-```
-
-![](class16_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-
-``` r
-if (!require("ggplot2")) {
-  install.packages("ggplot2")
-}
-```
-
-    ## Loading required package: ggplot2
-
-    ## Registered S3 methods overwritten by 'ggplot2':
-    ##   method         from 
-    ##   [.quosures     rlang
-    ##   c.quosures     rlang
-    ##   print.quosures rlang
-
-``` r
-library(ggplot2)
 ggplot(data, aes(pident, bitscore)) + geom_point(alpha=0.1) 
 ```
 
-![](class16_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](class16_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+The answer is that bitscores are only somewhat related to pident; they
+take into account not only the percent identity but the length of the
+alignment. You can get a napkin sketch estimate of this by doing the
+following:
 
 ``` r
-ggplot(data, aes((data$pident * (data$qend - data$qstart)), bitscore)) + geom_point(alpha=0.1) + geom_smooth()
+ggplot(data, aes((data$pident * (data$qend - data$qstart)), data$bitscore)) + geom_point(alpha=0.1) + geom_smooth()
 ```
 
     ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
 
-![](class16_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](class16_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

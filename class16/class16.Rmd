@@ -1,16 +1,37 @@
 ---
-title: "Class 16: Essential UNIX for bioinformatics "
+title: "Class 16"
+subtitle: "Essential UNIX for bioinformatics "
 author: "Yi Fu"
 date: "5/23/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+First, let's check if "ggplot2" package is installed. And then, load the package.
+```{r include=FALSE}
+if (!require("ggplot2")) {
+  install.packages("ggplot2")
+}
+```
+
 ```{r}
-data=read.csv("mm-second.x.zebrafish.tsv",sep="\t")
+library(ggplot2)
+```
+
+## 1. Unix command
+
+Here is a cheat sheet for the most commonly used commands.
+  <img src="data/unix.png" width="1000"/>
+
+## 2. ggplot2
+
+Let's load the Blast sequences after command-line pipeline.
+```{r}
+data=read.csv("data/mm-second.x.zebrafish.tsv",sep="\t")
 colnames(data)=c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore")
 head(data)
 ```
@@ -19,21 +40,14 @@ head(data)
 hist(data$bitscore,breaks=30)
 ```
 
+We want to know if there is a straightforward relationship between percent identity (\$pident) and bitscore (\$bitscore) for the alignments we generated.
 ```{r}
-plot(data$pident  * (data$qend - data$qstart), data$bitscore)
-```
-
-```{r}
-if (!require("ggplot2")) {
-  install.packages("ggplot2")
-}
-library(ggplot2)
 ggplot(data, aes(pident, bitscore)) + geom_point(alpha=0.1) 
 ```
 
-
+The answer is that bitscores are only somewhat related to pident; they take into account not only the percent identity but the length of the alignment. You can get a napkin sketch estimate of this by doing the following:
 ```{r}
-ggplot(data, aes((data$pident * (data$qend - data$qstart)), bitscore)) + geom_point(alpha=0.1) + geom_smooth()
+ggplot(data, aes((data$pident * (data$qend - data$qstart)), data$bitscore)) + geom_point(alpha=0.1) + geom_smooth()
 ```
 
 
