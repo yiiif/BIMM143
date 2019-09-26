@@ -52,16 +52,16 @@ GenomicDataCommons::status()
 ```
 
     ## $commit
-    ## [1] "e588f035feefee17f562b3a1bc2816c49a2b2b19"
+    ## [1] "b18b2385b1e916597856067dc6437f3c20b46bca"
     ## 
     ## $data_release
-    ## [1] "Data Release 16.0 - March 26, 2019"
+    ## [1] "Data Release 19.0 - September 17, 2019"
     ## 
     ## $status
     ## [1] "OK"
     ## 
     ## $tag
-    ## [1] "1.20.0"
+    ## [1] "1.22.0"
     ## 
     ## $version
     ## [1] 1

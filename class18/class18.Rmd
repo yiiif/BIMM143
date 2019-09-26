@@ -1,8 +1,9 @@
 ---
-title: 'Class 18: Cancer genomics'
+title: "Class 18"
+subtitle: "Cancer genomics"
 author: "Yi Fu"
 date: "5/30/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}

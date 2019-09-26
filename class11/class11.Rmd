@@ -2,82 +2,72 @@
 title: "Class 11: Structural Bioinformatics"
 author: "Yi Fu"
 date: "5/7/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
-
-## The PDB database
-
-The [PDB](http://www.rcsb.org) is the main repository for biomolecular structure data.
-
-Here we examine the contents of the PDB:
-
-> Q1: Download a CSV file from the PDB site (accessible from “Analyze” -> “PDB Statistics” > “by Experimental Method and Molecular Type”. Move this CSV file into your RStudio project and determine the percentage of structures solved by X-Ray and Electron Microscopy. From the website what proportion of structures are protein? Aim to have a rendered GitHub document with working code that yields your answers.
+First, let's check if "bio3d" package is installed. And then, load the packages.
+```{r include=FALSE}
+if (!require("bio3d")) {
+  install.packages("bio3d")
+}
+if (!require("datapasta")) {
+  install.packages("datapasta")
+}
+```
 
 ```{r}
-db = read.csv("Data Export Summary.csv", row.names = 1)
+library(bio3d)
+library(datapasta)
+```
+
+
+## 1. The PDB database
+
+The [PDB](http://www.rcsb.org) is the main repository for biomolecular structure data. The CSV file from the PDB site (“Analyze” -> “PDB Statistics” > “by Experimental Method and Molecular Type”) contains the information of the current database size.
+
+```{r}
+db = read.csv("data/Data Export Summary.csv", row.names = 1)
 head(db)
 ```
 
-We could also try the datapasta package and copy from the website and "Addins" > "Paste as data.frame"
-```{r}
-# if (!require("datapasta")) {
-#   install.packages("datapasta")
-# }
-library("datapasta")
-```
-```{r}
-## Use copy and paste
-# data.frame(stringsAsFactors=FALSE,
-#    Experimental.Method = c("X-Ray", "NMR", "Electron Microscopy", "Other",
-#                            "Multi Method", "Total"),
-#               Proteins = c(126880, 11062, 2277, 256, 129, 140604),
-#          Nucleic.Acids = c(2012, 1279, 31, 4, 5, 3331),
-#     Protein/NA.Complex = c(6547, 259, 800, 6, 2, 7614),
-#                  Other = c(8, 8, 0, 13, 1, 30),
-#                  Total = c(135447, 12608, 3108, 279, 137, 151579)
-# )
+With the datapasta package, we can copy the table from the website, and use "Tools" > "Addins" > "Paste as data.frame" to load the data.frame in R, shown below.
 
+```{r}
+data.frame(stringsAsFactors=FALSE,
+   Experimental.Method = c("X-Ray", "NMR", "Electron Microscopy", "Other",
+                           "Multi Method", "Total"),
+              Proteins = c(126880, 11062, 2277, 256, 129, 140604),
+         Nucleic.Acids = c(2012, 1279, 31, 4, 5, 3331),
+    Protein..NA.Complex = c(6547, 259, 800, 6, 2, 7614),
+                 Other = c(8, 8, 0, 13, 1, 30),
+                 Total = c(135447, 12608, 3108, 279, 137, 151579)
+)
 ```
 
-How many are X=Ray, etc...
+What proportion of structure are by X-Ray, NMR, Electron Microscopy, Other, Multi Method respectively?
 ```{r}
 (db$Total/sum(db$Total))*100
 ```
 
-what proportion of structures are protein?
+What proportion of structures are protein?
 ```{r}
 sum(db$Proteins)/sum(db$Total)*100
 ```
 
-> Q2: Type HIV in the PDB website search box on the home page and determine how many
-HIV-1 protease structures are in the current PDB?
+Type HIV in the PDB website search box, there are 1157 HIV-1 protease structures as of 2019-05-07.
 
-There are 1157 as of 2019-05-07 See:
-http://www.rcsb.org/pdb/results/results.do?tabtoshow=Current&qrid=4C97A937
-
-
-Reading PDB file data into R
+Then search for 1HSG, download the PDBfile, and read it into R.
+  <img src="data/1HSG.png" width="1000"/>
 ```{r}
-if (!require("bio3d")) {
-  install.packages("bio3d")
-}
-library(bio3d)
-```
-
-```{r}
-pdb = read.pdb("1hsg.pdb")
+pdb = read.pdb("data/1hsg.pdb")
 pdb
 ```
 
-> Q6. How many amino acid residues are there in this pdb object and what are the two nonprotein residues?
-#### protein residues: 1198. nonprotein residues: HOH (127), MK1 (1).
+There are 1198 protein residues: 1198, and 128 nonprotein residues - HOH (127), MK1 (1).
 
 ```{r}
 attributes(pdb)
@@ -105,7 +95,7 @@ Atom selection is done via the function **atom.select**
 inds = atom.select(pdb,"protein")
 pdb$atom[inds$atom,]
 inds = atom.select(pdb,"ligand")
-pdb$atom[inds$atom,]
+rmarkdown::paged_table(pdb$atom[inds$atom,])
 ```
 
 ```{r}
