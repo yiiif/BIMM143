@@ -9,6 +9,7 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 [Sequence Alignments](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class02/class02.html)
 
 **Class 03**: 
+[Advanced sequence alignment](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class03/class03.html)
 
 **Class 04**: 
 [Bioinformatics data analysis with R](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class04/class04.html)
