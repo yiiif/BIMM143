@@ -1,8 +1,9 @@
 ---
-title: "Class 12: Bioinformatics in drug discovery and design"
+title: "Class 12"
+subtitle: "Bioinformatics in drug discovery and design"
 author: "Yi Fu"
 date: "5/9/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -20,29 +21,34 @@ if (!require("bio3d")) {
 library(bio3d)
 ```
 
-## 
+And download *Autodock Vina* [here](http://vina.scripps.edu/download.html). 
 
-For this section, we will use the program called Autodock Vina [4]. Autodock Vina is a fast
-docking program that requires minimal user intervention and is often employed for highthroughput virtual screening. We will run it from the command line.
+## 1. Autodock Vina
+For this section, we will use the program called Autodock Vina [4]. Autodock Vina is a fast docking program that requires minimal user intervention and is often employed for highthroughput virtual screening. We will run it from the command line.
+
+Now we are ready to run autodoc vina to perform the docking. We will keep a log of all program
+output in a file log.txt
 ```{bash}
 #~/Downloads/autodock_vina_1_1_2_mac/bin/vina --config config.txt --log log.txt
 ```
 
-## process our docking results
+Once the run is complete, you should have two new files *all.pdbqt*, which contains all the
+docked modes, and *log.txt*
+
+## 2. Process the docking results with Bio3D in R
 ```{r}
 res <- read.pdb("all.pdbqt", multi=T)
 write.pdb(res, "results.pdb")
 ```
 
-##  calculate the RMSD (root mean square distance) between each of the docking results and the known crystal structure using the bio3d package.
+Let's calculate the RMSD (root mean square distance) between each of the docking results and the known crystal structure using the bio3d package.
 ```{r}
-# res <- read.pdb("all.pdbqt", multi=TRUE)
 ori <- read.pdb("1hsg_ligand.pdbqt")
 rmsd(ori, res)
 ```
 
-
-## Normal Mode analysis for flexibility prediction
+Normal mode analysis (NMA) is one of the major simulation techniques used to probe largescale motions in biomolecules. Typical application is for the prediction of functional motions in
+proteins.
 ```{r}
 pdb <- read.pdb("1HEL")
 modes <- nma(pdb)
