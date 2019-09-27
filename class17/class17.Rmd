@@ -1,8 +1,10 @@
 ---
-title: "Class 17: "
+title: "Class 17"
+subtitle: "Biological network analysis"
 author: "Yi Fu"
 date: "5/28/2019"
-output: github_document
+output: html_document
+#always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -100,7 +102,7 @@ To save the graph for reading into other software such as R, use "File > Export 
 
 ## 2. Use Cytoscape in R
 
-Let's check if we can talk to cytoscape
+Let's check if we can talk to cytoscape. (Remember to open **Cytoscape** application now.)
 ```{r}
 cytoscapePing()
 ```
@@ -134,32 +136,34 @@ fig <- exportImage(filename="data/demo_marquee", type="png", height=350)
 knitr::include_graphics("data/demo_marquee.png")
 ```
 
-
+We will read in a species co-occurrence matrix (**data/virus_prok_cor_abundant.tsv**) that was calculated using Spearman Rank coefficient. (see reference Lima-Mendez et al. (2015) for details)
 ```{r}
 prok_vir_cor <- read.delim("data/virus_prok_cor_abundant.tsv", stringsAsFactors = FALSE)
-head(prok_vir_cor)
+rmarkdown::paged_table(prok_vir_cor)
 ```
+
+Here we will use the igraph package to convert the co-occurrence dataframe into a network that we can send to Cytoscape.
 ```{r}
 g <- graph.data.frame(prok_vir_cor, directed = FALSE)
 plot(g)
 ```
 
-Lets turn off text labels
+To make the plot looks better, let's turn off text labels.
 ```{r}
 plot(g, vertex.label=NA)
 ```
 
-
-Make the vertex much smaller
+Let's also make the vertex much smaller.
 ```{r}
 plot(g, vertex.size=3, vertex.label=NA)
 ```
 
+Also, let's use the ggplot extension package for networks called **ggraph**.
 ```{r}
 ggraph(g, layout = 'auto') +
-  geom_edge_link(alpha = 0.25) +
-  geom_node_point(color="steelblue") +
-  theme_graph()
+geom_edge_link(alpha = 0.25) +
+geom_node_point(color="steelblue") +
+theme_graph()
 ```
 
 Send this network to Cytoscape.
@@ -171,15 +175,28 @@ Community structure detection algorithms try to find dense subgraphs within larg
 ```{r}
 cb = cluster_edge_betweenness(g)
 plot(cb, y=g, vertex.label=NA,  vertex.size=3)
+```
+
+The degree of a node or vertex is its most basic structural property, the number of its adjacent edges. Here we calculate and plot the node degree distribution.
+```{r}
 d <- degree(g)
 hist(d, breaks=30, col="lightblue", main ="Node Degree Distribution")
 plot( degree_distribution(g), type="h" )
 ```
 
+
 ## Centrality analysis
 
+Centrality gives an estimation on how important a node or edge is for the connectivity (or the information flow) of a network. It is a particularly useful parameter in signaling networks and it is often used when trying to find drug targets for example.
+```{r}
+pr <- page_rank(g)
+rmarkdown::paged_table(as.data.frame(pr$vector))
+```
+
+Lets plot our network with nodes size scaled via this page rank centrality scores.
 ```{r}
 bac_id_affi <- read.delim("data/prok_tax_from_silva.tsv", stringsAsFactors = FALSE)
-head(bac_id_affi)
+rmarkdown::paged_table(bac_id_affi)
 ```
+
 
