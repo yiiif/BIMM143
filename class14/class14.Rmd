@@ -1,217 +1,202 @@
 ---
-title: "Class 14: Transcriptomics and the analysis of RNA-Seq data"
+title: "Class 14"
+subtitle: "The analysis of RNA-Seq data"
 author: "Yi Fu"
 date: "5/16/2019"
-output: github_document
+output: html_document
+#always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+First, let's check if "DESeq2" package is installed. And then, load the package.
+```{r include=FALSE}
+if (!require("AnnotationDbi")) {
+  BiocManager::install("AnnotationDbi")
+}
+if (!require("org.Hs.eg.db")) {
+  BiocManager::install("org.Hs.eg.db")
+}
+if (!require("DESeq2")) {
+  BiocManager::install("DESeq2")
+}
+if (!require("ggplot2")) {
+  install.packages("ggplot2")
+}
+```
+
 ```{r}
-#install.packages("BiocManager")
-#BiocManager::install()
-
-# For this class, you'll also need DESeq2:
-#BiocManager::install("DESeq2")
-
-library(BiocManager)
+library(AnnotationDbi)
+library(org.Hs.eg.db)
 library(DESeq2)
+library(ggplot2)
 ```
 
+## 1. Processing the data
+The computational analysis of an RNA-seq experiment begins from the FASTQ files that contain the nucleotide sequence of each read and a quality score at each position. These reads must first be aligned to a reference genome or transcriptome. The output of this alignment step is commonly stored in a file format called SAM/BAM. This is the workflow we followed last day.
+
+Lets perform some exploratory differential gene expression analysis. **Note: this analysis is for demonstration only. NEVER do differential expression analysis this way!**
+
+First, load the data.
 ```{r}
-counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE,row.names = 1)
-metadata <-  read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+counts = read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE,row.names = 1)
+metadata = read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+rmarkdown::paged_table(counts)
+rmarkdown::paged_table(metadata)
 ```
 
+Subset the **metadata** into two data frames.
 ```{r}
-control.inds <- metadata$dex == "control"
-control <- metadata[control.inds,]
-control
-```
-
-```{r}
-head(counts[,control$id])
+control = metadata[metadata$dex=="control",]
+treated = metadata[metadata$dex=="treated",]
+rmarkdown::paged_table(control)
+rmarkdown::paged_table(treated)
 ```
 
 Determine the mean count values for all genes accross control experiments
 ```{r}
-control.mean <- rowSums(counts[,control$id])/length(counts[,control$id])
-head(control.mean)
-```
-
-Do the same for the drug treated experiments
-
-```{r}
-treated.inds <- metadata$dex == "treated"
-treated <- metadata[treated.inds,]
-treated
-```
-
-```{r}
-head(counts[,treated$id])
-```
-
-```{r}
-treated.mean <- rowSums(counts[,treated$id])/length(counts[,treated$id])
-head(treated.mean)
+control.mean = rowSums(counts[,control$id])/length(counts[,control$id])
+treated.mean = rowSums(counts[,treated$id])/length(counts[,treated$id])
 ```
 
 Let's store the control.mean and treated.mean together for ease of use
-
 ```{r}
-meancounts <- data.frame(control.mean, treated.mean)
+meancounts = data.frame(control.mean, treated.mean)
+rmarkdown::paged_table(meancounts)
 colSums(meancounts)
 ```
 
+Plot the control vs treated.
 ```{r}
 plot(meancounts[,1:2],xlab="Control",ylab="Treated")
+```
+
+We see a few dozen dots outside of the big clump around the origin. So, let's try plotting both axes on a log scale.
+```{r}
 plot(meancounts[,1:2],log="xy",xlab="log Control",ylab="log Treated")
 ```
 
 Here we calculate log2foldchange.
 ```{r}
-meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
-head(meancounts)
+meancounts$log2fc = log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
 ```
 
 We will now remove the NaN and -Inf values.
 The NaN is returned when you divide by zero and try to take the log. The -Inf is returned when you try to take the log of zero.
 ```{r}
-zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
-to.rm <- unique(zero.vals[,1])
-mycounts <- meancounts[-to.rm,]
-head(mycounts)
+zero.vals = which(meancounts[,1:2]==0, arr.ind=TRUE)
+to.rm = unique(zero.vals[,1])
+meancounts = meancounts[-to.rm,]
+rmarkdown::paged_table(meancounts)
 ```
 
 How many genes are up in the drug treated cells and how many are down?
 ```{r}
-up.ind <- mycounts$log2fc > 2
-down.ind <- mycounts$log2fc < (-2)
+up.ind = meancounts$log2fc > 2
+down.ind = meancounts$log2fc < (-2)
 sum(up.ind)
 sum(down.ind)
 ```
 
+## 2. Annotation
+
 We can add annotation from a supplied CSV file, such as those available from ENSEMBLE or UCSC. The annotables_grch38.csv annotation table links the unambiguous Ensembl gene ID to other useful annotation like the gene symbol, full gene name, location, Entrez gene ID, etc.
 ```{r}
-anno <- read.csv("annotables_grch38.csv")
-head(anno)
+anno = read.csv("annotables_grch38.csv")
 ```
 
-Use the **merge** funtion to add the annotation data from the "anno" object to our RNA-Seq results in "mycounts"
+Use the **merge** funtion to add the annotation data from the "anno" object to our RNA-Seq results in "meancounts"
 ```{r}
 # use the merge function
-mycounts.anno <- merge(mycounts,anno,by.x = "row.names", by.y = "ensgene")
-head(mycounts.anno)
+meancounts.anno = merge(meancounts, anno, by.x="row.names", by.y="ensgene")
+rmarkdown::paged_table(meancounts.anno)
 ```
 
-
+We can use the *mapIds()* function to add individual columns to our results table.
 ```{r}
-#BiocManager::install("AnnotationDbi")
-library("AnnotationDbi")
-#BiocManager::install("org.Hs.eg.db")
-library("org.Hs.eg.db")
 columns(org.Hs.eg.db)
-```
-
-```{r}
-mycounts$symbol <- mapIds(org.Hs.eg.db,
-                     keys=row.names(mycounts),
+meancounts$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(meancounts),
                      column="SYMBOL",
                      keytype="ENSEMBL",
                      multiVals="first")
-mycounts$entrez <- mapIds(org.Hs.eg.db,
-                     keys=row.names(mycounts),
+meancounts$entrez <- mapIds(org.Hs.eg.db,
+                     keys=row.names(meancounts),
                      column="ENTREZID",
                      keytype="ENSEMBL",
                      multiVals="first")
-mycounts$uniprot <- mapIds(org.Hs.eg.db,
-                     keys=row.names(mycounts),
+meancounts$uniprot <- mapIds(org.Hs.eg.db,
+                     keys=row.names(meancounts),
                      column="UNIPROT",
                      keytype="ENSEMBL",
                      multiVals="first")
 ```
 
 ```{r}
-head(mycounts[up.ind,])
-head(mycounts[down.ind,])
+rmarkdown::paged_table(meancounts[up.ind,])
+rmarkdown::paged_table(meancounts[down.ind,])
 ```
 
-```{r}
-#BiocManager::install("DESeq2")
-library(DESeq2)
-citation("DESeq2")
-```
+## 3. Differential gene expression
 
-Setup the object needed for DESeq analysis
+DESeq is Differential gene expression analysis based on the negative binomial distribution. Setup the object needed for DESeq analysis
 ```{r}
 counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
-dds <- DESeqDataSetFromMatrix(countData=counts, 
-                              colData=metadata, 
-                              design=~dex, 
-                              tidy=TRUE)
-dds <- DESeq(dds)
+dds = DESeqDataSetFromMatrix(countData=counts, 
+                             colData=metadata, 
+                             design=~dex, 
+                             tidy=TRUE)
+dds = DESeq(dds)
 ```
 
 ```{r}
-res <- results(dds)
+res = results(dds)
 summary(res)
-resOrdered <- res[order(res$pvalue),]
-```
-
-Change the p-value threshold to 0.05
-```{r}
-res05 <- results(dds, alpha=0.05)
-summary(res05)
-```
-
-```{r}
-resSig05 <- subset(as.data.frame(res), padj < 0.05)
-nrow(resSig05)
+rmarkdown::paged_table(as.data.frame(res[order(res$pvalue),]))
 ```
 
 Change the p-value threshold again to 0.01
 ```{r}
-res05 <- results(dds, alpha=0.01)
-summary(res05)
+res01 = results(dds, alpha=0.01)
+summary(res01)
 ```
 
-Store our results as a data.frame object
+Store our results as a data.frame object, sort or order our results by the adjusted p-value
 ```{r}
-resSig01 <- subset(as.data.frame(res), padj < 0.01)
-nrow(resSig01)
+resSig01 = subset(as.data.frame(res), padj < 0.01)
+rmarkdown::paged_table(resSig01[order(resSig01$padj),])
 ```
 
-Let's sort or order our results by the adjusted p-value
+
+## 4. Data visualization
+
+Let’s first see what the gene ID is for the CRISPLD2 gene using:
 ```{r}
-ord <- order( resSig01$padj )
-head(resSig01[ord,])
-#write.csv(resSig01[ord,], "signif01_results.csv")
+resSig01[grep("CRISPLD2", resSig01$symbol),]
+rownames(resSig01[grep("CRISPLD2", resSig01$symbol),])
 ```
 
-Data visualization
+We can mow use this returned object to plot a boxplot with the base graphics function
 ```{r}
-i <- grep("CRISPLD2", resSig01$symbol)
-resSig01[i,]
-rownames(resSig01[i,])
-```
-
-```{r}
-d <- plotCounts(dds, gene="ENSG00000103196", intgroup="dex", returnData=TRUE)
+d = plotCounts(dds, gene="ENSG00000103196", intgroup="dex", returnData=TRUE)
 head(d)
 boxplot(count ~ dex , data=d)
 ```
 
+Or use **ggplot2**
 ```{r}
-library(ggplot2)
-ggplot(d, aes(dex, count)) + geom_boxplot(aes(fill=dex)) + scale_y_log10() + ggtitle("CRISPLD2")
+ggplot(d, aes(dex, count)) + 
+geom_boxplot(aes(fill=dex)) + 
+scale_y_log10() + 
+ggtitle("CRISPLD2")
 ```
 
 Volcano plot
 ```{r}
 # Setup our custom point color vector 
-mycols <- rep("gray", nrow(res))
+mycols = rep("gray", nrow(res))
 mycols[ res$padj < 0.01 ]  <- "red" 
 mycols[ abs(res$log2FoldChange) > 2 ]  <- "blue"
 mycols[ (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 ) ] <- "green"
@@ -224,11 +209,10 @@ abline(v=c(-2,2), col="darkgray", lty=2)
 abline(h=-log(0.1), col="darkgray", lty=2)
 ```
 
+Or use **ggplot2**
 ```{r}
-# Use ggplot
-library(ggplot2)
 ggplot(as.data.frame(res), aes(log2FoldChange, -log10(pvalue), col=mycols)) + 
-    geom_point() + 
-    ggtitle("Volcano plot")
+geom_point() + 
+ggtitle("Volcano plot")
 ```
 
