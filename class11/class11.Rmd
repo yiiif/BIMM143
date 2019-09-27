@@ -11,7 +11,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-First, let's check if "bio3d" package is installed. And then, load the packages.
+First, let's check if "bio3d" package is installed. And then, load the package.
 ```{r include=FALSE}
 if (!require("bio3d")) {
   install.packages("bio3d")

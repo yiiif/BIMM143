@@ -4,7 +4,7 @@ Yi Fu
 5/7/2019
 
 First, let’s check if “bio3d” package is installed. And then, load the
-packages.
+package.
 
 ``` r
 library(bio3d)
