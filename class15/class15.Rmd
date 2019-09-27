@@ -1,122 +1,43 @@
 ---
-title: "Class 15: Genome annotation and the interpretation of gene lists"
+title: "Class 15"
+subtitle: "Genome annotation and the interpretation of gene lists"
 author: "Yi Fu"
 date: "5/21/2019"
-output: github_document
+output: html_document
+#always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## RNA-Seq Analysis
-
-The data for for hands-on session comes from GEO entry: GSE37704, which is associated with the following publication:
-
-> Trapnell C, Hendrickson DG, Sauvageau M, Goff L et al. “Differential analysis of gene regulation at transcript resolution with RNA-seq”. Nat Biotechnol 2013 Jan;31(1):46-53. PMID: 23222703
+First, let's check if "DESeq2" package is installed. And then, load the package.
+```{r include=FALSE}
+if (!require("DESeq2")) {
+  BiocManager::install("DESeq2")
+}
+if (!require("pathview")) {
+  BiocManager::install("pathview")
+}
+if (!require("gage")) {
+  BiocManager::install("gage")
+}
+if (!require("gageData")) {
+  BiocManager::install("gageData")
+}
+```
 
 ```{r}
 library(DESeq2)
-```
-
-```{r}
-colData = read.csv("GSE37704_metadata.csv", row.names=1)
-head(colData)
-```
-
-```{r}
-countData = read.csv("GSE37704_featurecounts.csv", row.names=1)
-head(countData)
-```
-
-Hmm... looks like we need to remove that odd first "length" column in countData. And then, let's also remove the rows with zero counts in all experiments (i.e. columns)
-
-```{r}
-# Note we need to remove the odd first $length col
-countData.matrix = as.matrix(countData[,-1])
-# Filter count data where you have 0 read count across all samples.
-countData.matrix = countData.matrix[rowSums(countData.matrix) != 0,]
-head(countData.matrix)
-```
-
-Let's setup the DESeqDataSet object required for the DESeq() function and then run the DESeq pipeline.
-
-```{r}
-dds = DESeqDataSetFromMatrix(countData=countData.matrix,
-                             colData=colData,
-                             design=~condition)
-dds = DESeq(dds)
-dds
-```
-
-```{r}
-res = results(dds)
-summary(res)
-```
-
-## Volcano plot
-
-Now we will make a volcano plot, a commonly produced visualization from this type of data that we introduced last day. Basically it’s a plot of log2 fold change vs -log adjusted p-value.
-
-```{r}
-# Make a color vector for all genes
-mycols <- rep("gray", nrow(res) )
-
-# Color red the genes with absolute fold change above 2
-mycols[ abs(res$log2FoldChange) > 2 ] <- "red"
-
-# Color blue those with adjusted p-value less than 0.01 and absolute fold change more than 2
-mycols[ (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 ) ] <- "blue"
-
-plot( res$log2FoldChange, -log(res$padj), col=mycols, xlab="Log2(FoldChange)", ylab="-Log(P-value)", pch=16,cex=0.5)
-abline(v=c(-2,2), col="black", lty=2, lwd=2)
-abline(h=-log(0.01), col="black", lty=2, lwd=2)
-```
-
-Add annotation (i.e. different gene names and ids)
-Use the mapIDs() function multiple times to add SYMBOL, ENTREZID and GENENAME annotation to our results by completing the code below.
-```{r}
-library("AnnotationDbi")
-
-#BiocManager::install("org.Hs.eg.db")
-library("org.Hs.eg.db")
-
-columns(org.Hs.eg.db)
-```
-
-```{r}
-res$symbol = mapIds(org.Hs.eg.db,
-                    keys=row.names(res), 
-                    keytype="ENSEMBL",
-                    column="SYMBOL",
-                    multiVals="first")
-
-res$entrez = mapIds(org.Hs.eg.db,
-                    keys=row.names(res),
-                    keytype="ENSEMBL",
-                    column="ENTREZID",
-                    multiVals="first")
-
-res$name =   mapIds(org.Hs.eg.db,
-                    keys=row.names(res),
-                    keytype="ENSEMBL",
-                    column="GENENAME",
-                    multiVals="first")
-
-head(as.data.frame(res))
-```
-
-```{r}
-res = res[order(res$pvalue),]
-write.csv(res, file="deseq_results.csv")
-```
-
-```{r}
-#BiocManager::install(c("pathview", "gage", "gageData"))
 library(pathview)
 library(gage)
 library(gageData)
+```
 
+## 1. KEGG Pathway Analysis
+The gageData package has pre-compiled databases mapping genes to KEGG pathways and GO terms for common organisms.
+```{r}
+# data from gagaData package
 data(kegg.sets.hs)
 data(sigmet.idx.hs)
 
@@ -129,6 +50,7 @@ head(kegg.sets.hs, 3)
 
 Create a vector of FoldChange values that has ENTREZ identifiers as the names of the vecotr. This is the format that the **gage()** function wants.
 ```{r}
+res = read.csv("data/deseq_results.csv",row.names=1)
 foldchanges = res$log2FoldChange
 names(foldchanges) = res$entrez
 head(foldchanges)
@@ -138,10 +60,7 @@ Now lets look at the object returned from gage()
 ```{r}
 # Get the results
 keggres = gage(foldchanges, gsets=kegg.sets.hs)
-```
-
-```{r}
-head(keggres$less)
+rmarkdown::paged_table(as.data.frame(keggres$less))
 ```
 
 ```{r}
@@ -150,9 +69,9 @@ pathview(gene.data=foldchanges, pathway.id="hsa04110")
 # pathview(gene.data=foldchanges, pathway.id="hsa04110", kegg.native=FALSE)
 ```
 
-![](hsa04110.pathview.png)
+  <img src="hsa04110.pathview.png" width="1000"/>
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # Focus on top 5 upregulated pathways here for demo purposes only
 keggrespathways <- rownames(keggres$greater)[1:5]
 
@@ -163,20 +82,21 @@ keggresids
 pathview(gene.data=foldchanges, pathway.id=keggresids, species="hsa")
 ```
 Here are the plots:
-![](hsa04640.pathview.png)
-![](hsa04630.pathview.png)
-![](hsa00140.pathview.png)
-![](hsa04142.pathview.png)
-![](hsa04330.pathview.png)
 
-## Reactome
+  <img src="hsa04640.pathview.png" width="1000"/>
+  <img src="hsa04630.pathview.png" width="1000"/>
+  <img src="hsa00140.pathview.png" width="1000"/>
+  <img src="hsa04142.pathview.png" width="1000"/>
+  <img src="hsa04330.pathview.png" width="1000"/>
+
+## 2. Reactome
 ```{r}
 sig_genes <- res[res$padj <= 0.05 & !is.na(res$padj), "symbol"]
 print(paste("Total number of significant genes:", length(sig_genes)))
-write.table(sig_genes, file="significant_genes.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
+write.table(sig_genes, file="data/significant_genes.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
 ```
 
 Then, to perform pathway analysis online go to the Reactome website (https://reactome.org/PathwayBrowser/#TOOL=AT). Select “choose file” to upload your significant gene list. Then, select the parameters “Project to Humans”, then click “Analyze”.
 
-## GO
+## 3. GO
 To perform Gene Set GO Enrichment online go to the website (http://www.geneontology.org/page/go-enrichment-analysis)x. Paste your significant gene list from section 4. Then, select “biological process” and “homo sapiens”, and click submit.
