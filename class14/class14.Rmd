@@ -41,8 +41,8 @@ Lets perform some exploratory differential gene expression analysis. **Note: thi
 
 First, load the data.
 ```{r}
-counts = read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE,row.names = 1)
-metadata = read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+counts = read.csv("data/airway_scaledcounts.csv", stringsAsFactors = FALSE,row.names = 1)
+metadata = read.csv("data/airway_metadata.csv", stringsAsFactors = FALSE)
 rmarkdown::paged_table(counts)
 rmarkdown::paged_table(metadata)
 ```
@@ -104,7 +104,7 @@ sum(down.ind)
 
 We can add annotation from a supplied CSV file, such as those available from ENSEMBLE or UCSC. The annotables_grch38.csv annotation table links the unambiguous Ensembl gene ID to other useful annotation like the gene symbol, full gene name, location, Entrez gene ID, etc.
 ```{r}
-anno = read.csv("annotables_grch38.csv")
+anno = read.csv("data/annotables_grch38.csv")
 ```
 
 Use the **merge** funtion to add the annotation data from the "anno" object to our RNA-Seq results in "meancounts"
@@ -143,7 +143,7 @@ rmarkdown::paged_table(meancounts[down.ind,])
 
 DESeq is Differential gene expression analysis based on the negative binomial distribution. Setup the object needed for DESeq analysis
 ```{r}
-counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
+counts <- read.csv("data/airway_scaledcounts.csv", stringsAsFactors = FALSE)
 dds = DESeqDataSetFromMatrix(countData=counts, 
                              colData=metadata, 
                              design=~dex, 
@@ -154,7 +154,9 @@ dds = DESeq(dds)
 ```{r}
 res = results(dds)
 summary(res)
-rmarkdown::paged_table(as.data.frame(res[order(res$pvalue),]))
+res = res[order(res$pvalue),]
+rmarkdown::paged_table(as.data.frame(res))
+write.csv(res, file="data/deseq_results.csv")
 ```
 
 Change the p-value threshold again to 0.01
