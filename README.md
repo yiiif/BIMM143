@@ -34,26 +34,26 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 [Hands-on with Git](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class10/class10.html)
 
 **Class 11**: 
-[Structural Bioinformatics](https://github.com/yiiif/BIMM143/blob/master/class11/class11.md)
+[Structural Bioinformatics](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class11/class11.html)
 
 **Class 12**: 
-[Bioinformatics in drug discovery and design](https://github.com/yiiif/BIMM143/blob/master/class12/class12.md)
+[Bioinformatics in drug discovery and design](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class12/class12.html)
 
 **Class 13**:
 
 **Class 14**: 
-[Transcriptomics and the analysis of RNA-Seq data](https://github.com/yiiif/BIMM143/blob/master/class14/class14.md)
+[The analysis of RNA-Seq data](https://github.com/yiiif/BIMM143/blob/master/class14/class14.md)
 
 **Class 15**: 
 [Genome annotation and the interpretation of gene lists](https://github.com/yiiif/BIMM143/blob/master/class15/class15.md)
 
 **Class 16**: 
-[Essential UNIX for bioinformatics](https://github.com/yiiif/BIMM143/blob/master/class16/class16.md)
+[Essential UNIX for bioinformatics](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class16/class16.html)
 
 **Class 17**: 
-[Biological network analysis](https://github.com/yiiif/BIMM143/blob/master/class17/class17.md)
+[Biological network analysis](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class17/class17.html)
 
 **Class 18**: 
-[Cancer genomics](https://github.com/yiiif/BIMM143/blob/master/class18/class18.md)
+[Cancer genomics](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class18/class18.html)
 
 to show a html file prefix: http://htmlpreview.github.io/?
