@@ -40,9 +40,10 @@ This is my class work of [BIMM 143 Spring 2019](https://bioboot.github.io/bimm14
 [Bioinformatics in drug discovery and design](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class12/class12.html)
 
 **Class 13**:
+[Genomic Informatics and the RNA-Seq data](http://htmlpreview.github.io/?https://github.com/yiiif/BIMM143/blob/master/class13/class13.html)
 
 **Class 14**: 
-[The analysis of RNA-Seq data](https://github.com/yiiif/BIMM143/blob/master/class14/class14.md)
+[Transcriptome Informatics and the analysis of RNA-Seq data](https://github.com/yiiif/BIMM143/blob/master/class14/class14.md)
 
 **Class 15**: 
 [Genome annotation and the interpretation of gene lists](https://github.com/yiiif/BIMM143/blob/master/class15/class15.md)
